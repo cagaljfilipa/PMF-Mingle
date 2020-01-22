@@ -9,28 +9,15 @@ from datingapp.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 
-#posts = [
-#    {
-#         'author': 'Corey Schafer',
-#         'title': 'Blog Post 1',
-#         'content': 'First post content',
-#         'date_posted': 'April 20, 2018'
-#     },
-#     {
-#         'author': 'Jane Doe',
-#         'title': 'Blog Post 2',
-#         'content': 'Second post content',
-#         'date_posted': 'April 21, 2018'
-#     }
-# ]
-
-
 @app.route("/")
 @app.route("/home")
 def home():
-    page  = request.args.get('page', 1, type=int)
+    page  = request.args.get('page', 1, type=int)        
     posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+
+    #posts = Post.query.join(User).filter_by(gender='Female').all()  
     return render_template('home.html', posts=posts)
+
 
 
 @app.route("/about")
@@ -45,10 +32,10 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, gender=form.gender.data, preference=form.preference.data)
         db.session.add(user)
         db.session.commit()
-        flash('Your account has been created! You are now able to log in', 'success')
+        flash('Your account has been created! You are now able to log in!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 

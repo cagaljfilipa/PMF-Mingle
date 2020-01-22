@@ -35,7 +35,11 @@
                   </div>
                   {% else %} {{ form.email(class="form-control form-control-lg") }} {%
                   endif %}
-                </div>
+                </div>  
+                <div class="form-group">
+                  <p>Gender: {{ current_user.gender }}</p>
+                  <p>Preference: {{ current_user.preference }}</p>                  
+                </div>              
               </fieldset>
               <div class="form-group">
                 {{ form.picture.label() }}
