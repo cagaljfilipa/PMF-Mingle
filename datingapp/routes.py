@@ -9,14 +9,30 @@ from datingapp.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 
+
+
+
+posts = None
 @app.route("/")
 @app.route("/home")
 def home():
-    page  = request.args.get('page', 1, type=int)        
-    posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
-
-    #posts = Post.query.join(User).filter_by(gender='Female').all()  
+    #page  = request.args.get('page', 1, type=int)   
+    #posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)    
+    posts = Post.query.all()
     return render_template('home.html', posts=posts)
+
+#Jinja za paginaciju, 'home.html'
+# {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+#       {% if page_num %}
+#         {% if posts.page == page_num %}
+#           <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+#         {% else %}
+#           <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+#         {% endif %}
+#       {% else %}
+#         ...
+#       {% endif %}
+#     {% endfor %}  
 
 
 
@@ -57,6 +73,7 @@ def login():
 
 @app.route("/logout")
 def logout():
+    posts = None
     logout_user()
     return redirect(url_for('home'))
 
@@ -141,14 +158,14 @@ def delete_post(post_id):
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
 
-@app.route("/user/<string:username>")
-def user_posts(username):
-    page  = request.args.get('page', 1, type=int)
-    user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.filter_by(author=user)\
-        .order_by(Post.date_posted.desc())\
-        .paginate(page=page, per_page=5)
-    return render_template('user_posts.html', posts=posts, user=user)
+# @app.route("/user/<string:username>")
+# def user_posts(username):
+#     page  = request.args.get('page', 1, type=int)
+#     user = User.query.filter_by(username=username).first_or_404()
+#     posts = Post.query.filter_by(author=user)\
+#         .order_by(Post.date_posted.desc())\
+#        .paginate(page=page, per_page=5)
+#     return render_template('user_posts.html', posts=posts, user=user)
 
 def send_reset_email(user):
     token = user.get_reset_token()
