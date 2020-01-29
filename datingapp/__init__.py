@@ -22,6 +22,6 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 mail = Mail(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, manage_session=False)
 
 from datingapp import routes
