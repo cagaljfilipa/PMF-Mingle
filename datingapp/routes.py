@@ -2,12 +2,13 @@ import os
 import secrets
 from PIL import Image
 from flask import Flask, render_template, url_for, flash, redirect, request, abort
-from datingapp import app, db, bcrypt, mail
+from datingapp import app, db, bcrypt, mail, socketio
 from datingapp.models import User, Post
 from datingapp.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
                             PostForm, RequestResetForm, ResetPasswordForm)
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
+from flask_socketio import send, emit
 
 
 
@@ -34,9 +35,14 @@ def home():
 
 
 
-@app.route("/about")
-def about():
-    return render_template('about.html', title='About')
+@app.route("/chat")
+def chat():
+    return render_template('chat.html', title='About')
+
+@socketio.on('message')
+def handleMessage(msg):
+	print('Message: ' + msg)
+	send(msg, broadcast=True)
 
 
 @app.route("/register", methods=['GET', 'POST'])
