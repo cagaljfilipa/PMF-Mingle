@@ -11,8 +11,6 @@ from flask_mail import Message
 
 
 
-
-posts = None
 @app.route("/")
 @app.route("/home")
 def home():
@@ -73,7 +71,6 @@ def login():
 
 @app.route("/logout")
 def logout():
-    posts = None
     logout_user()
     return redirect(url_for('home'))
 
@@ -85,7 +82,7 @@ def save_picture(form_picture):
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
 
     #Pillow package za smanjit sliku
-    output_size = (125,125)
+    output_size = (400,400)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
 
@@ -112,6 +109,9 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
+
+
+
 @app.route("/post/new",  methods=['GET', 'POST'])
 @login_required
 def new_post():
@@ -128,6 +128,23 @@ def new_post():
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', title=post.title, post=post)
+
+@app.route("/account/<int:post_id>")
+def user_account(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('user_account.html', title=post.title, post=post)
+
+@app.route('/like/<int:post_id>/<action>')
+@login_required
+def like_action(post_id, action):
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if action == 'like':
+        current_user.like_post(post)
+        db.session.commit()
+    if action == 'unlike':
+        current_user.unlike_post(post)
+        db.session.commit()
+    return redirect(request.referrer)
 
 @app.route("/post/<int:post_id>/update",  methods=['GET', 'POST'])
 @login_required
@@ -207,3 +224,4 @@ def reset_token(token):
         flash('Your password has been updated! You are now able to log in', 'success')
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Reset Password', form=form)
+

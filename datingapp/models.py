@@ -18,9 +18,29 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     preference = db.Column(db.String(20), nullable=False)
-    posts = db.relationship('Post', backref='author', lazy=True)
+    posts = db.relationship('Post', backref='author', lazy=True)  
 
-    
+    liked = db.relationship(
+        'PostLike',
+        foreign_keys='PostLike.user_id',
+        backref='user', lazy='dynamic')
+
+    def like_post(self, post):
+        if not self.has_liked_post(post):
+            like = PostLike(user_id=self.id, post_id=post.id)
+            db.session.add(like)
+
+    def unlike_post(self, post):
+        if self.has_liked_post(post):
+            PostLike.query.filter_by(
+                user_id=self.id,
+                post_id=post.id).delete()
+
+    def has_liked_post(self, post):
+        return PostLike.query.filter(
+            PostLike.user_id == self.id,
+            PostLike.post_id == post.id).count() > 0
+  
 
     def get_reset_token(self, expires_sec=1800):
         #resertiranje sifre
@@ -40,6 +60,7 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}','{self.email}','{self.image_file}', '{self.gender}', '{self.preference}')"
 
 
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -47,6 +68,19 @@ class Post(db.Model):
                             default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    likes = db.relationship('PostLike', backref='post', lazy='dynamic')
+    
 
     def __repr__(self):
         return f"Post('{self.title}','{self.date_posted}')"
+
+class PostLike(db.Model):
+    __tablename__ = 'post_like'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+likers = db.Table('likers',
+    db.Column('liker_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('liked_id', db.Integer, db.ForeignKey('post.id'))
+)

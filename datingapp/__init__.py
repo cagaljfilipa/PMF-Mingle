@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a9a097abccaf499c09c57b01ea05fa057bef697877b1dd25a25bf0ad32f502ed'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -20,5 +21,6 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 mail = Mail(app)
+
 
 from datingapp import routes
