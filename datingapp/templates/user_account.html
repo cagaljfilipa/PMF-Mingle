@@ -6,12 +6,7 @@
     <div class="card-body">
         <h1 class="card-text" style="color: black-50;">
             {{ post.author.username }}
-        </h1>
-        {% if current_user.has_liked_post(post) %}
-        <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">Unlike</a>
-        {% else %}
-        <a href="{{ url_for('like_action', post_id=post.id, action='like') }}">Like</a>
-        {% endif %}
+        </h1>        
     </div>
   </div>
   <div class="media-body">
