@@ -78,7 +78,9 @@
           <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">Unlike</a>
           {% else %}
           <a href="{{ url_for('like_action', post_id=post.id, action='like') }}">Like</a>
-          {% endif %}        
+          {% endif %} 
+          <br>
+          {{ post.likes.count() }} likes
       </article>       
       {% endif %}  
     {% endif %}
@@ -98,7 +100,9 @@
             <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">Unlike</a>
             {% else %}
             <a href="{{ url_for('like_action', post_id=post.id, action='like') }}">Like</a>
-            {% endif %}        
+            {% endif %}
+            <br>
+            {{ post.likes.count() }} likes    
           </article>       
         {% endif %}  
     {% endif %}
@@ -118,10 +122,12 @@
             <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">Unlike</a>
             {% else %}
             <a href="{{ url_for('like_action', post_id=post.id, action='like') }}">Like</a>
-            {% endif %}    
+            {% endif %}
+            <br>
+            {{ post.likes.count() }} likes    
           </article>       
         {% endif %}  
-    {% endif %}  
+    {% endif %} 
 
     {% endfor %}
 {% endblock content %}
